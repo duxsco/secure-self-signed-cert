@@ -2,6 +2,41 @@
 
 This script basically creates the same simple certificate chain as [mkcert](https://github.com/FiloSottile/mkcert), but with the [Name Constraints](https://www.openssl.org/docs/man1.1.1/man5/x509v3_config.html#Name-Constraints) restriction.
 
+Thus, you have a root certificate for import in the webbrowser that is valid only for a single domain (leaf) certificate:
+
+```
+❯ openssl x509 -noout -in www.mydomain.internal-root.pem -ext nameConstraints
+X509v3 Name Constraints: critical
+    Permitted:
+      DNS:mydomain.internal
+    Excluded:
+      DNS:.mydomain.internal
+
+❯ echo Q | openssl s_client \
+    -connect www.mydomain.internal:443 \
+    -servername www.mydomain.internal 2>/dev/null | \
+        openssl x509 -noout -subject -ext subjectAltName
+subject=CN = www.mydomain.internal
+X509v3 Subject Alternative Name:
+    DNS:www.mydomain.internal, DNS:mydomain2.internal
+
+❯ curl --cacert www.mydomain.internal-root.pem https://www.mydomain.internal
+curl: (60) SSL certificate problem: excluded subtree violation
+More details here: https://curl.se/docs/sslcerts.html
+
+curl failed to verify the legitimacy of the server and therefore could not
+establish a secure connection to it. To learn more about this situation and
+how to fix it, please visit the web page mentioned above.
+
+❯ curl --cacert www.mydomain.internal-root.pem https://mydomain2.internal
+curl: (60) SSL certificate problem: excluded subtree violation
+More details here: https://curl.se/docs/sslcerts.html
+
+curl failed to verify the legitimacy of the server and therefore could not
+establish a secure connection to it. To learn more about this situation and
+how to fix it, please visit the web page mentioned above.
+```
+
 "secure-self-signed-cert.sh" run:
 
 ```
