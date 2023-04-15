@@ -1,6 +1,6 @@
 # secure-self-signed-cert
 
-This script basically creates the same simple certificate chain as [mkcert](https://github.com/FiloSottile/mkcert), but with the [Name Constraints](https://www.openssl.org/docs/man1.1.1/man5/x509v3_config.html#Name-Constraints) restriction. The following examples will have this "Name Constraint" in the root certificate:
+This script basically creates the same simple certificate chain as [mkcert](https://github.com/FiloSottile/mkcert), but with the [Name Constraints](https://www.openssl.org/docs/man1.1.1/man5/x509v3_config.html#Name-Constraints) restriction. The following examples will have this "Name Constraints" in the root certificate:
 
 ```
 ❯ openssl x509 -noout -in mydomain.internal-root.pem -ext nameConstraints
@@ -11,7 +11,7 @@ X509v3 Name Constraints: critical
       DNS:.mydomain.internal
 ```
 
-Thus, you have a root certificate for import in the webbrowser that is valid only for a single kind of domain (leaf) certificate. Things won't validate successfully as soon as any domain other than the one permitted in the "Named Constraint" is stored in the "Common Name" or "SAN" of the domain certificate.
+Thus, you have a root certificate for import in the webbrowser that is valid only for a single kind of domain (leaf) certificate. Things won't validate successfully as soon as any domain other than the one permitted in the "Name Constraints" is stored in the "Common Name" or "SAN" of the domain certificate.
 
 - Example 1: Forbidden domain in "Common Name"
 
