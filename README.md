@@ -89,20 +89,29 @@ hello world!
 "secure-self-signed-cert.sh" run:
 
 ```
-❯ bash secure-self-signed-cert.sh mydomain.internal
-Generating RSA private key, 2048 bit long modulus (2 primes)
-...............+++++
-.........+++++
-e is 65537 (0x010001)
-Enter pass phrase for mydomain.internal-domain-key.pem:
-Verifying - Enter pass phrase for mydomain.internal-domain-key.pem:
-Enter pass phrase for mydomain.internal-domain-key.pem:
-Generating RSA private key, 2048 bit long modulus (2 primes)
-...............................................+++++
+❯ bash secure-self-signed-cert.sh -h
+secure-self-signed-cert.sh -d <domain> [-r] [-s] [-y <number of years> ]
+"-d" specifies the domain, e.g. "www.mydomain.internal"
+"-r" uses RSA instead of default ECDSA
+"-s" creates stronger keys. Depending on the algorithm in use,
+     RSA 3072 bit instead of 2048 bit or
+     ECDSA 384 bit instead of 256 bit is used.
+"-y" sets number of years the domain certificate should be valid (default: 1 year).
+     The root certificate is valid 1 year longer than the domain certificate.
+     So, you can issue a new valid domain certificate using the old root key
+     if the expiration of the old domain certificate has gone unnoticed.
+"-h" prints this help
+
+❯ bash secure-self-signed-cert.sh -d mydomain.internal -r
 .....+++++
-e is 65537 (0x010001)
-Enter pass phrase for mydomain.internal-root-key.pem:
-Verifying - Enter pass phrase for mydomain.internal-root-key.pem:
+.......................................+++++
+Enter PEM pass phrase:
+Verifying - Enter PEM pass phrase:
+Enter pass phrase for mydomain.internal-domain-key.pem:
+.............................................+++++
+......+++++
+Enter PEM pass phrase:
+Verifying - Enter PEM pass phrase:
 Enter pass phrase for mydomain.internal-root-key.pem:
 Signature ok
 subject=CN = duxsco root CA for mydomain.internal
