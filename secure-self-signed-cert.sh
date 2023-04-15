@@ -19,7 +19,7 @@ done
 openssl x509 -req -days 400 -in "${domain}-root-csr.pem" -out "${domain}-root.pem" -signkey "${domain}-root-key.pem" -extfile <(
 echo "keyUsage = critical,keyCertSign
 basicConstraints = critical,CA:TRUE,pathlen:0
-nameConstraints=critical,permitted;DNS:${domain}
+nameConstraints=critical,permitted;DNS:${domain},excluded;DNS:.${domain}
 subjectKeyIdentifier=hash")
 
 openssl x509 -req -days 370 -in "${domain}-domain-csr.pem" -out "${domain}-domain.pem" -CA "${domain}-root.pem" -CAkey "${domain}-root-key.pem" -extfile <(
