@@ -25,3 +25,16 @@ echo "keyUsage = critical,digitalSignature,keyEncipherment
 extendedKeyUsage = serverAuth
 subjectAltName = DNS:$1
 authorityKeyIdentifier=keyid")
+
+if ! openssl verify -CAfile "${1}-root.pem" "${1}-domain.pem" >/dev/null 2>&1; then
+echo '
+  _________________
+< Something smells! >
+  -----------------
+         \   ^__^
+          \  (oo)\_______
+             (__)\       )\/\
+                 ||----w |
+                 ||     ||
+'
+fi
