@@ -1,5 +1,7 @@
 # secure-self-signed-cert
 
+> ️⚠️ You can find information on my GnuPG public key in my [GitHub profile README](https://github.com/duxsco/)! ⚠️
+
 This script basically creates the same simple certificate chain as [mkcert](https://github.com/FiloSottile/mkcert), but with the [Name Constraints](https://www.openssl.org/docs/man1.1.1/man5/x509v3_config.html#Name-Constraints) restriction. The following examples will have this "Name Constraints" in the root certificate:
 
 ```
