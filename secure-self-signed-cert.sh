@@ -59,23 +59,36 @@ declare -A subject
 subject["domain"]="/CN=${domain}"
 subject["root"]="/CN=duxsco root CA for ${domain}"
 
+echo ""
+read -r -s -p 'Passphrase to set for private key: ' PASSPHRASE
+echo ""
+read -r -s -p 'Please, repeat the passphrase: ' PASSPHRASE_REPEAT
+
+if [ "${PASSPHRASE}" != "${PASSPHRASE_REPEAT}" ]; then 
+    echo -e "\nPassphrases don't match! Aborting...\n"
+    exit 1
+else
+    echo -e "\n"
+    export PASSPHRASE
+fi
+
 for type in "${!subject[@]}"; do
   if [[ ${rsa} == "true" ]]; then
-    ${openssl} genpkey -aes256 -out "${domain}-${type}-key.pem" -algorithm RSA -pkeyopt "rsa_keygen_bits:${bits:-2048}"
+    ${openssl} genpkey -pass env:PASSPHRASE -aes256 -out "${domain}-${type}-key.pem" -algorithm RSA -pkeyopt "rsa_keygen_bits:${bits:-2048}"
   else
-    ${openssl} genpkey -aes256 -out "${domain}-${type}-key.pem" -algorithm EC  -pkeyopt "ec_paramgen_curve:P-${bits:-256}" -pkeyopt ec_param_enc:named_curve
+    ${openssl} genpkey -pass env:PASSPHRASE -aes256 -out "${domain}-${type}-key.pem" -algorithm EC  -pkeyopt "ec_paramgen_curve:P-${bits:-256}" -pkeyopt ec_param_enc:named_curve
   fi
 
-  ${openssl} req -new -sha256 -subj "${subject[$type]}" -key "${domain}-${type}-key.pem" -out "${domain}-${type}-csr.pem"
+  ${openssl} req -passin env:PASSPHRASE -new -sha256 -subj "${subject[$type]}" -key "${domain}-${type}-key.pem" -out "${domain}-${type}-csr.pem"
 done
 
-${openssl} x509 -req -days $(( ( years + 1 ) * 365 )) -in "${domain}-root-csr.pem" -out "${domain}-root.pem" -signkey "${domain}-root-key.pem" -extfile <(
+${openssl} x509 -passin env:PASSPHRASE -req -days $(( ( years + 1 ) * 365 )) -in "${domain}-root-csr.pem" -out "${domain}-root.pem" -signkey "${domain}-root-key.pem" -extfile <(
 echo "keyUsage = critical,keyCertSign
 basicConstraints = critical,CA:TRUE,pathlen:0
 nameConstraints=critical,permitted;DNS:${domain},excluded;DNS:.${domain}
 subjectKeyIdentifier=hash")
 
-${openssl} x509 -req -days $(( years * 365 )) -in "${domain}-domain-csr.pem" -out "${domain}-domain.pem" -CA "${domain}-root.pem" -CAkey "${domain}-root-key.pem" -extfile <(
+${openssl} x509 -passin env:PASSPHRASE -req -days $(( years * 365 )) -in "${domain}-domain-csr.pem" -out "${domain}-domain.pem" -CA "${domain}-root.pem" -CAkey "${domain}-root-key.pem" -extfile <(
 echo "keyUsage = critical,digitalSignature,keyEncipherment
 extendedKeyUsage = serverAuth
 subjectAltName = DNS:${domain}
