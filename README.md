@@ -105,24 +105,20 @@ secure-self-signed-cert.sh -d <domain> [-r] [-s] [-y <number of years> ]
 "-h" prints this help
 
 ❯ bash secure-self-signed-cert.sh -d mydomain.internal -r
-.....+++++
-.......................................+++++
-Enter PEM pass phrase:
-Verifying - Enter PEM pass phrase:
-Enter pass phrase for mydomain.internal-domain-key.pem:
-.............................................+++++
-......+++++
-Enter PEM pass phrase:
-Verifying - Enter PEM pass phrase:
-Enter pass phrase for mydomain.internal-root-key.pem:
+
+Passphrase to set for private key:
+Please, repeat the passphrase:
+
+...........................+++++
+............................+++++
+.............+++++
+.................................+++++
 Signature ok
 subject=CN = duxsco root CA for mydomain.internal
 Getting Private key
-Enter pass phrase for mydomain.internal-root-key.pem:
 Signature ok
 subject=CN = mydomain.internal
 Getting CA Private Key
-Enter pass phrase for mydomain.internal-root-key.pem:
 
 ❯ ls -1 mydomain.internal-*
 mydomain.internal-domain-csr.pem
